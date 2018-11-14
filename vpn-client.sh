@@ -35,18 +35,19 @@ function vpnclient() {
 	sudo /etc/init.d/vpnclient $@
 }
 function renameInterface () {
-	echo Renaming $INTF to $CONN . . .
+	echo Checking $INTF . . .
         sleep 1
 	if [ -e "/sys/class/net/$INTF/operstate" ]
 	then
-		echo $INTF exists, renaming now.
+		echo . . . $INTF exists, renaming now.
         	ip link set $INTF down
         	ip link set $INTF name $CONN
         	ip link set $CONN up
         	ifconfig
         	sleep 1
 	else
-		echo $INTF Was not created, exiting script . . .
+		echo $INTF Was not created.
+		echo Stopping script . . .
 		exit 1
 	fi
 }
@@ -54,6 +55,7 @@ function renameInterface () {
 function clientSetup {
 	# Start the client and create a network interface controller:
 	vpnclient start
+	sleep 1
 	vpncmd NicCreate $NICN
 	# Rename the network interface so it does not have an underscore:
 	ifconfig
@@ -61,7 +63,6 @@ function clientSetup {
 	# Create the account for the new VPN Server and provide a password:
 	vpncmd accountcreate $NAME /SERVER:$SERV /HUB:$VHUB /USERNAME:$USER /NICNAME:$NICN
 	vpncmd accountpasswordset $NAME /PASSWORD:$PASS /TYPE:$TYPE
-	sleep 10
 	# Setup is complete, stop the VPN client.
 	vpncmd accountlist
 	ifconfig
