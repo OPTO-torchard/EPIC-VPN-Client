@@ -6,9 +6,11 @@ PORT='5555'
 VHUB=vpn
 USER=flynn
 PASS=secret
-TYPE=standard
-CONN=tun0
 
+# Password $TYPE is 'standard' or 'radius':
+TYPE=standard
+# Virtual network connection interface name:
+CONN=tun0
 # For internal use:
 NICN=epic
 INTF="$VHUB"_"$NICN"
@@ -43,11 +45,19 @@ function renameInterface () {
         	ip link set $INTF down
         	ip link set $INTF name $CONN
         	ip link set $CONN up
-        	ifconfig
         	sleep 1
 	else
 		echo $INTF Was not created.
 		echo Stopping script . . .
+		exit 1
+	fi
+	sleep 1
+	if [ -e "/sys/class/net/$CONN/operstate" ]
+	then
+		echo Interface succesfully renamed to $CONN
+	else
+		echo Interface rename failed.
+		ehco Stopping script . . .
 		exit 1
 	fi
 }
@@ -58,20 +68,19 @@ function clientSetup {
 	sleep 1
 	vpncmd NicCreate $NICN
 	# Rename the network interface so it does not have an underscore:
-	ifconfig
 	renameInterface
 	# Create the account for the new VPN Server and provide a password:
 	vpncmd accountcreate $NAME /SERVER:$SERV /HUB:$VHUB /USERNAME:$USER /NICNAME:$NICN
 	vpncmd accountpasswordset $NAME /PASSWORD:$PASS /TYPE:$TYPE
-	# Setup is complete, stop the VPN client.
+	# Setup is complete, double check the settings and then stop the VPN client.
 	vpncmd accountlist
-	ifconfig
+	vpncmd niclist
 	vpnclient stop
 }
 function clientConnect {
 	vpnclient start
+	vpncmd accountlist
 	vpncmd niclist
-	ifconfig
 	vpncmd accountconnect $NAME
 	echo . . . accountconnect . . .
 	renameInterface
@@ -79,14 +88,16 @@ function clientConnect {
 	vpncmd accountlist
 	sudo dhclient-real $CONN
 	sleep 1
-	ifconfig
 	ufw allow in on $CONN from any to any
+	ufw status
+	ifconfig $CONN | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1 }'
 }
 function clientDisconnect {
 	vpncmd accountdisconnect $NAME
 	sleep 3
 	vpnclient stop
 	ufw delete allow in on $CONN from any to any
+	ufw status
 }
 
 case $1 in
