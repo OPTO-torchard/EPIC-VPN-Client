@@ -1,0 +1,11 @@
+[{"id":"ee5eced4.da512","type":"mqtt
+in","z":"1340b11e.8dbabf","name":"","topic":"dev/control/vpn","qos":"2","broker":"4d9acca9.59e6b4","x":200,"y":220,"wires":[["956591b6.b7fb8","30ce83f4.83662c"]]},{"id":"956591b6.b7fb8","type":"debug","z":"1340b11e.8dbabf","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","x":390,"y":180,"wires":[]},{"id":"30ce83f4.83662c","type":"exec","z":"1340b11e.8dbabf","command":"sudo
+./unsecured/vpn-client.sh
+","addpay":true,"append":"","useSpawn":"true","timer":"","oldrc":false,"name":"","x":450,"y":220,"wires":[["7bf1e312.e1414c"],["4ad1cb04.da0814"],["4ad1cb04.da0814"]]},{"id":"6d59df1c.dd9e2","type":"debug","z":"1340b11e.8dbabf","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","x":810,"y":200,"wires":[]},{"id":"4ad1cb04.da0814","type":"debug","z":"1340b11e.8dbabf","name":"","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","x":670,"y":240,"wires":[]},{"id":"7bf1e312.e1414c","type":"function","z":"1340b11e.8dbabf","name":"filter","func":"if(msg.payload
+== (\"\\n\")){\n    return null;\n} else if (msg.payload.includes(\"The
+command completed successfully.\") && !msg.payload.includes(\"AccountList
+command\")) {\n    return null;\n} else if (msg.payload.includes(\"SoftEther
+VPN Command Line Management Utility\")) {\n    return null;\n} else { return
+msg;
+}","outputs":1,"noerr":0,"x":670,"y":200,"wires":[["6d59df1c.dd9e2"]]},{"id":"4d9acca9.59e6b4","type":"mqtt-broker","z":"","name":"Opto22
+Public","broker":"mqtt.groov.com","port":"1883","clientid":"","usetls":false,"compatmode":true,"keepalive":"60","cleansession":true,"birthTopic":"","birthQos":"0","birthPayload":"","closeTopic":"","closeQos":"0","closePayload":"","willTopic":"","willQos":"0","willPayload":""}]

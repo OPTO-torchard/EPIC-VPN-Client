@@ -18,14 +18,14 @@ SERV="$HOST":"$PORT"
 # Check to make sure the server settings have been added:
 if [ $NAME = "NULL" ]
 then
-	echo Update server settings in script before executing.
+	echo Modify server settings in script before executing.
 	echo Stopping script . . .
 	exit 1
 fi
 # Check to make sure an instruction is provided:
 if [ $# != 1 ]
 then
-	echo Please enter exactly one command parameter.
+	echo Please provide exactly one command parameter.
 	echo Stopping script . . .
 	exit 1
 fi
@@ -54,10 +54,10 @@ function renameInterface () {
 	sleep 1
 	if [ -e "/sys/class/net/$CONN/operstate" ]
 	then
-		echo Interface succesfully renamed to $CONN
+		echo Interface succesfully renamed to $CONN.
 	else
 		echo Interface rename failed.
-		ehco Stopping script . . .
+		echo Stopping script . . .
 		exit 1
 	fi
 }
@@ -69,7 +69,7 @@ function clientSetup {
 	vpncmd NicCreate $NICN
 	# Rename the network interface so it does not have an underscore:
 	renameInterface
-	# Create the account for the new VPN Server and provide a password:
+	# Create the account for the new VPN server and provide a password:
 	vpncmd accountcreate $NAME /SERVER:$SERV /HUB:$VHUB /USERNAME:$USER /NICNAME:$NICN
 	vpncmd accountpasswordset $NAME /PASSWORD:$PASS /TYPE:$TYPE
 	# Setup is complete, double check the settings and then stop the VPN client.
@@ -81,15 +81,16 @@ function clientConnect {
 	vpnclient start
 	vpncmd accountlist
 	vpncmd niclist
+	# Connect to VPN server and fix network interface:
 	vpncmd accountconnect $NAME
-	echo . . . accountconnect . . .
 	renameInterface
-	echo . . . accountlist . . .
 	vpncmd accountlist
+	# Get an IP address and make necessary firewall exceptions:
 	sudo dhclient-real $CONN
 	sleep 1
 	ufw allow in on $CONN from any to any
 	ufw status
+	# Return the IP address given by the VPN server:
 	ifconfig $CONN | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1 }'
 }
 function clientDisconnect {
@@ -99,7 +100,7 @@ function clientDisconnect {
 	ufw delete allow in on $CONN from any to any
 	ufw status
 }
-
+# MAIN CONTROL LOGIC:
 case $1 in
         0)
                 echo Disconnecting from server . . .
@@ -113,7 +114,7 @@ case $1 in
                 echo Running client setup . . .
 		clientSetup
                 ;;
-        *)
+        *)	# -help
                 echo groov EPIC VPN client script help
                 echo Before executing please modify the server credentials.
                 echo This script requires exactly one parameter:
