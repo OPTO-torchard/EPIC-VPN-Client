@@ -9,8 +9,8 @@ function vpnclient() {
 }
 
 vpnclient start
-vpncmd accountdisconnect home
-vpncmd accountdelete home
+vpncmd accountdisconnect $1
+vpncmd accountdelete $1
 vpncmd nicdelete epic
 vpnclient stop
 
