@@ -36,6 +36,7 @@ function vpncmd() {
 function vpnclient() {
 	sudo /etc/init.d/vpnclient $@
 }
+# Rename the network interface so that it does not have an underscore:
 function renameInterface () {
 	echo Checking $INTF . . .
         sleep 1
@@ -51,7 +52,6 @@ function renameInterface () {
 		echo Stopping script . . .
 		exit 1
 	fi
-	sleep 1
 	if [ -e "/sys/class/net/$CONN/operstate" ]
 	then
 		echo Interface succesfully renamed to $CONN.
@@ -67,8 +67,6 @@ function clientSetup {
 	vpnclient start
 	sleep 1
 	vpncmd NicCreate $NICN
-	# Rename the network interface so it does not have an underscore:
-	renameInterface
 	# Create the account for the new VPN server and provide a password:
 	vpncmd accountcreate $NAME /SERVER:$SERV /HUB:$VHUB /USERNAME:$USER /NICNAME:$NICN
 	vpncmd accountpasswordset $NAME /PASSWORD:$PASS /TYPE:$TYPE
@@ -78,14 +76,17 @@ function clientSetup {
 	vpnclient stop
 }
 function clientConnect {
+	# Start the VPN client and check the settings:
 	vpnclient start
 	vpncmd accountlist
 	vpncmd niclist
-	# Connect to VPN server and fix network interface:
+	# Connect to VPN server and fix the network interface name:
 	vpncmd accountconnect $NAME
 	renameInterface
+	# Wait fot the connection to go through, then check state:
+	sleep 3
 	vpncmd accountlist
-	# Get an IP address and make necessary firewall exceptions:
+	# Get an IP address and make firewall exceptions:
 	sudo dhclient-real $CONN
 	sleep 1
 	ufw allow in on $CONN from any to any
@@ -123,3 +124,4 @@ case $1 in
                 echo $'\t'0 = stop VPN connection
                 ;;
 esac
+echo END OF LINE
