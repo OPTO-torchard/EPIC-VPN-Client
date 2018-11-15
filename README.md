@@ -36,14 +36,21 @@ For example, `sudo ./runcmd.sh accountlist` to list current VPN settings and the
 
 ## For use with Node-RED
 
-To have `vpn-client.sh` controlled by Node-RED using the included `flow.txt`, you must give the EPIC Node-RED user root permission over this file, import the flow, make any necessary modifications, and then send `2`, `1` and `0` as messages over a specific topic to control the VPN client.
+To have `vpn-client.sh` controlled by Node-RED using the included `flow.txt`, you must give the EPIC Node-RED user root permission over this file, import the flow, make any necessary modifications, and then send `2`, `1` and `0` as messages to append to the command in the exec node to control the VPN client.
 
-1. Modify the server details at the top of the `vpn-client.sh` file.
-2. Place the file in the unsecured file area so that its path is `/home/dev/unsecured/vpn-client.sh`, you may do this with groov Manage.
-3. As the root user, modify `sudoers` so that the `dev` user can run this file as root with no password:
-    `sudo echo "dev ALL = (root) NOPASSWD: /home/dev/unsecured/vpn-client.sh" >> /etc/sudoers`
-4. Make sure Node-RED has the package **node-red-contrib-groov**, then import the flow from `flow.txt` through your clipboard.
-5. Modify the MQTT node with the server and topic you wish to use to control the VPN client, and then deploy the flow. 
+1. Add a shell license through _groov_ Manage and create a shell user.
+2. Open a secure shell (SSH) session with the EPIC over port 22 using [PuTTY](https://www.putty.org/) for Windows, or shell on Mac / Linux.
+3. Download `vpn-client.sh` to your PC and modify the server details at the top of the file. The other files are optional.
+4. Place the file in the unsecured file area so that its path is `/home/dev/unsecured/vpn-client.sh`, you can do this with groov Manage in the System Files menu.
+5. In the SSH session with the EPIC, make yourself root and then modify `sudoers` so that the `dev` user can run this file as root without entering a password, and make it executable:
+```
+sudo su
+echo "dev ALL = (root) NOPASSWD: /home/dev/unsecured/vpn-client.sh" >> /etc/sudoers
+chmod +x /home/dev/unsecured/vpn-client.sh
+exit
+```
+6. Make sure Node-RED has the package **node-red-contrib-groov**, install it through the pallet manager if you don't have it, and then import the flow from `flow.txt` through your clipboard.
+7. Modify the MQTT node with the server and topic you wish to use to control the VPN client, and then deploy the flow. 
 
 ---
 
