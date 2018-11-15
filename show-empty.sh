@@ -7,13 +7,13 @@ function vpnclient() {
 }
 echo Showing that no VPN is currently set up . . . $'\n'
 vpnclient start
-echo . . . No VPN server settings:
+echo ". . . No VPN server settings:"
 vpncmd accountlist
-echo . . . No Network Interface Controller (NIC):
+echo ". . . No Network Interface Controller (NIC):"
 vpncmd niclist
-echo . . . No non-default network interfaces:
+echo ". . . No non-default network interfaces:"
 ifconfig
-echo . . . No firewall exceptions:
+echo ". . . No firewall exceptions:"
 ufw status
 vpnclient stop
 echo END OF LINE
