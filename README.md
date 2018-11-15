@@ -36,7 +36,7 @@ For example, `sudo ./runcmd.sh accountlist` to list current VPN settings and the
 
 ## For use with Node-RED
 
-To have `vpn-client.sh` controlled by Node-RED using the included `flow.txt`, you must give the EPIC Node-RED user root permission over this file, import the flow, make any necessary modifications, and then send `2`, `1` and `0` as messages to append to the command in the exec node to control the VPN client.
+To have `vpn-client.sh` executed by Node-RED using the included `flow.txt` you will need to put the script in the unsecured file area of the EPIC, use SSH to give the Node-RED user permission to run the file as root, and make it executable. After that, import the flow, make any necessary modifications to the broker and topic, and finally send `2`, `1`, or `0` as control message payloads to be appended to the command in the exec node.
 
 1. Add a shell license through _groov_ Manage and create a shell user.
 2. Open a secure shell (SSH) session with the EPIC over port 22 using [PuTTY](https://www.putty.org/) for Windows, or shell on Mac / Linux.
