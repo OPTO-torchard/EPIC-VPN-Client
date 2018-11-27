@@ -9,9 +9,9 @@ PASS=secret
 
 # Password $TYPE is 'standard' or 'radius':
 TYPE=standard
-# Virtual network connection interface name:
-CONN=tun0
 # For internal use:
+# CONN = Virtual network connection interface name
+CONN=tun0
 NICN=epic
 INTF="$VHUB"_"$NICN"
 SERV="$HOST":"$PORT"
@@ -104,24 +104,24 @@ function clientDisconnect {
 # MAIN CONTROL LOGIC:
 case $1 in
         0)
-                echo Disconnecting from server . . .
-		clientDisconnect
-                ;;
+            echo Disconnecting from server . . .
+			clientDisconnect
+            ;;
         1)
-                echo Connecting to server . . .
-		clientConnect
-                ;;
+			echo Connecting to server . . .
+			clientConnect
+            ;;
         2)
-                echo Running client setup . . .
-		clientSetup
-                ;;
+            echo Running client setup . . .
+			clientSetup
+            ;;
         *)	# -help
-                echo groov EPIC VPN client script help
-                echo Before executing please modify the server credentials.
-                echo This script requires exactly one parameter:
-                echo $'\t'2 = run client setup
-                echo $'\t'1 = start VPN connection
-                echo $'\t'0 = stop VPN connection
-                ;;
+            echo -- groov EPIC VPN client script help --
+            echo Before executing you must modify the server credentials.
+            echo This script requires sudo and exactly one parameter:
+            echo $'\t'2 = run client setup
+            echo $'\t'1 = start VPN connection
+            echo $'\t'0 = stop VPN connection
+            ;;
 esac
 echo END OF LINE
