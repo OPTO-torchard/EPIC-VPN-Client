@@ -1,6 +1,6 @@
 #!/bin/bash
 # Set the following variables:
-SERVER_PASS=veryverysecret
+SERVER_PASS=verysecret
 HUB_PASS=secret
 
 USER_LIST=(user1 user2 user3 user4)
