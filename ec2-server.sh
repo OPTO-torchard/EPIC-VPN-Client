@@ -1,6 +1,6 @@
 #!/bin/bash
 # Set the following variables:
-SERVER_PASS=verysecret
+SERVER_PASS=veryverysecret
 HUB_PASS=secret
 
 USER_LIST=(user1 user2 user3 user4)
@@ -42,7 +42,9 @@ function installServer {
 	tar -xf $VPN_TAR
 	rm $VPN_TAR
 	cd $CWD/vpnserver
-	sudo make
+	
+	yes 1 | sudo make
+
 	sudo chmod 644 *
 	sudo chmod 755 vpnserver vpncmd
 	
@@ -56,6 +58,7 @@ function configureServer {
 	}
 	# Start server runtime:
 	sudo /usr/local/vpnserver/vpnserver start
+	sleep 1
 	# Set the server password:
 	sudo /usr/local/vpnserver/vpncmd localhost /SERVER /CMD ServerPasswordSet $SERVER_PASS
 	# Create VPN hub:
@@ -66,7 +69,7 @@ function configureServer {
 	for i in $(seq 0 $((${#USER_LIST[*]}-1)))
 	do
 		echo Adding user $i
-		vpncmd UserCreate ${USER_LIST[i]} /GROUP:none /REALNAME:${USER_LIST[i]} /NOTE:"User created via install script."
+		vpncmd UserCreate ${USER_LIST[i]} /GROUP:none /REALNAME:none /NOTE:"User created via install script."
 		vpncmd UserPasswordSet ${USER_LIST[i]} /PASSWORD:${PASS_LIST[i]}
 	done
 	# Set IP protocols:
